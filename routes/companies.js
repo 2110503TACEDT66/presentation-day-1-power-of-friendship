@@ -1,5 +1,5 @@
 const express = require('express');
-const {getHospitals,getHospital,createHospital,updateHospital,deleteHospital,getVacCenters} = require('../controllers/hospitals');
+const {getCompanies,getCompany,createCompany,updateCompany,deleteCompany,getVacCenters} = require('../controllers/companies');
 const appointmentRouter = require('./appointments');
 const {protect,authorize} = require('../middleware/auth');
 const router = express.Router();
@@ -172,10 +172,10 @@ const router = express.Router();
  *          404:
  *              description: The hospital was not found
  */
-router.use('/:hospitalId/appointments/',appointmentRouter)
+router.use('/:companyId/appointments/',appointmentRouter)
 
-router.route('/').get(getHospitals).post(protect,authorize('admin'),createHospital);
+router.route('/').get(getCompanies).post(protect,authorize('admin'),createCompany);
 router.route('/vacCenters').get(getVacCenters);
-router.route('/:id').get(getHospital).put(protect,authorize('admin'),updateHospital).delete(protect,authorize('admin'),deleteHospital);
+router.route('/:id').get(getCompany).put(protect,authorize('admin'),updateCompany).delete(protect,authorize('admin'),deleteCompany);
 
 module.exports=router;

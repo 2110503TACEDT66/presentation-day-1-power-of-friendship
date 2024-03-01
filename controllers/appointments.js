@@ -1,26 +1,26 @@
 const { compareSync } = require('bcryptjs');
 const Appointment = require('../models/Appointment');
-const Hospital = require('../models/Hospital');
+const Company = require('../models/Company');
 
 exports.getAppointments = async(req,res,next)=>{
     let query;
     //General users can see only their appointment!
     if(req.user.role !== 'admin'){
         query = Appointment.find({user:req.user.id}).populate({
-            path:'hospital',
-            select: 'name province tel'
+            path:'company',
+            select: 'name address tel'
         });
     }else{
-        if(req.params.hospitalId){
-            console.log(req.params.hospitalId);
-            query=Appointment.find({hospital: req.params.hospitalId}).populate({
-                path:'hospital',
-                select: 'name province tel'
+        if(req.params.companyId){
+            console.log(req.params.companyId);
+            query=Appointment.find({hospital: req.params.companyId}).populate({
+                path:'company',
+                select: 'name address tel'
             });
         }else{
             query=Appointment.find().populate({
-                path:'hospital',
-                select: 'name province tel'
+                path:'company',
+                select: 'name address tel'
             });
         }
     }
@@ -43,7 +43,7 @@ exports.getAppointments = async(req,res,next)=>{
 exports.getAppointment = async (req, res, next)=>{
     try{
         const appointment = await Appointment.findById(req.params.id).populate({
-            path: 'hospital',
+            path: 'company',
             select: 'name description tel'
         });
         if(!appointment){
@@ -58,12 +58,12 @@ exports.getAppointment = async (req, res, next)=>{
 
 exports.addAppointment= async (req, res, next)=>{
     try{
-        req.body.hospital = req.params.hospitalId;
+        req.body.company = req.params.companyId;
 
-        const hospital = await Hospital.findById(req.params.hospitalId);
+        const company = await Company.findById(req.params.companyId);
 
-        if(!hospital){
-            return res.status(404).json({success:false, message: `No hospital with the id of ${req.params.hospitalId}`});
+        if(!company){
+            return res.status(404).json({success:false, message: `No company with the id of ${req.params.companyId}`});
         }
 
         console.log(req.body);
