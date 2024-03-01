@@ -53,6 +53,7 @@ const limiter = rateLimit({
     windowsMs : 10*60*1000,
     max: 500
 })
+
 app.use(limiter);
 
 app.use('/api/v1/companies',companies);
