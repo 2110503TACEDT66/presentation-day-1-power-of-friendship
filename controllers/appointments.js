@@ -115,6 +115,15 @@ exports.addAppointment= async (req, res, next) => {
                 message: `The user with ID ${req.user.id} has not chooses the specifies date`
             });
         }
+        //Check AppointmentTime is still available
+        const checkAppointmentTime = await Appointment.find({company: req.params.companyId, appDate: req.body.appDate});
+
+        if(checkAppointmentTime){
+                return res.status(400).json({
+                    success: false,
+                    message: `The appointment time for ${req.body.appDate} at this company is already booked. Please choose a different time.`
+                });
+        }
         const appointment = await Appointment.create(req.body);
 
         res.status(200).json({
