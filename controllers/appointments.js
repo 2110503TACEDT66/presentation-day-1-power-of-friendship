@@ -108,7 +108,13 @@ exports.addAppointment= async (req, res, next) => {
                 message: `The user with ID ${req.user.id} has already made 3 appointments`
             });
         }
-
+        //If he chooses a date other than the specified date
+        if (req.body.appDate < '2022-05-10T00:00:00.000Z' || '2022-05-13T23:59:59.999Z' < req.body.appDate) {
+            return res.status(400).json({
+                success: false,
+                message: `The user with ID ${req.user.id} has not chooses the specifies date`
+            });
+        }
         const appointment = await Appointment.create(req.body);
 
         res.status(200).json({
