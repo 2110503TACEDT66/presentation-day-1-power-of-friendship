@@ -1,14 +1,11 @@
 const express = require('express');
-const {getCompanies,getCompany,createCompany,updateCompany,deleteCompany,getVacCenters} = require('../controllers/companies');
-const appointmentRouter = require('./appointments');
-const {protect,authorize} = require('../middleware/auth');
-const router = express.Router();
+const {getCompanies, getCompany, createCompany, updateCompany, deleteCompany} = require('../controllers/companies');
 
 /**
 * @swagger
 * components:
 *   schemas:
-*       Hospital:
+*       Company:
 *           type: object
 *           required:
 *               - name
@@ -17,7 +14,7 @@ const router = express.Router();
 *               id:
 *                   type: string
 *                   format: uuid
-*                   description: The auto-generated id of the hospital
+*                   description: The auto-generated id of the company
 *                   example: d290f1ee-6c54-4b01-90e6-d701748f0851
 *               ลําดับ:
 *                   type: string
@@ -28,154 +25,159 @@ const router = express.Router();
 *               address:
 *                   type: string
 *                   description: House No., Street, Road
-*               district:
+*               website:
 *                   type: string
-*                   description: District
-*               province:
+*                   description: Company website
+*               description:
 *                   type: string
-*                   description: province
-*               postalcode:
-*                   type: string
-*                   description: 5-digit postal code
+*                   description: information about website
 *               tel:
 *                   type: string
 *                   description: telephone number
-*               region:
-*                   type: string
-*                   description: region
 *           example:
 *               id: 609bda561452242d88d36e37
-*               ลําดับ: )*)
+*               ลําดับ: 120
 *               name: Happy Hospital
 *               address: 121 ถ.สุขุมวิท
-*               district: บางนา
-*               province: กรุงเทพมหานคร
-*               postalcode: 10110
+*               website: https://www.google.com/
+*               description: Google is an internet search engine. It uses a proprietary algorithm t…
 *               tel: 02-2187000
-*               region: กรุงเทพมหานคร (Bangkok)
 */ 
+
 /**
  * @swagger
  * tags:
- *  name: Hospitals
- *  description: The hospitals managing API
+ *  name: Companies
+ *  description: The companies managing API
  */
+
 /**
  * @swagger
- * /hospitals:
+ * /companies:
  *    get:
- *      summary: Returns the list of all the hospitals
- *      tags: [Hospitals]
+ *      summary: Returns the list of all the companies
+ *      tags: [Companies]
  *      responses:
  *        200:
- *          description: The list of the hospitals
+ *          description: The list of the companies
  *          content:
  *             application/json:
  *                schema:
  *                    type: array
  *                    items:
- *                      $ref: '#components/schemas/Hospital'     
+ *                      $ref: '#components/schemas/Company'     
  */
+
 /**
- * @swagger
-* /hospitals/{id}:
+* @swagger
+* /companies/{id}:
 *   get:
-*     summary: Get the hospital by id
-*     tags: [Hospitals]
+*     summary: Get the company by id
+*     tags: [Companies]
 *     parameters:
 *       - in: path
 *         name: id
 *         schema:
 *           type: string
 *         required: true
-*         description: The hospital id
+*         description: The company id
 *     responses:
 *       200:
-*         description: The hospital description by id
+*         description: The company description by id
 *         content:
 *           application/json:
 *             schema:
-*               $ref: '#/components/schemas/Hospital'
+*               $ref: '#/components/schemas/Company'
 *       404:
-*         description: The hospital was not found
+*         description: The company was not found
 */
+
 /**
  * @swagger
- * /hospitals:
+ * /companies:
  *  post:
- *      summary: Create a new hospital
- *      tags: [Hospitals]
+ *      summary: Create a new company
+ *      tags: [Companies]
  *      requestBody:
  *          required: true
  *          content:
  *              application/json:
  *                  schema:
- *                      $ref: '#/components/schemas/Hospital'
+ *                      $ref: '#/components/schemas/Company'
  *      responses:
  *          201:
- *              description: The hospital was successfully created
+ *              description: The company was successfully created
  *              content:
  *                  application/json:
  *                      schema:
- *                          $ref: '#/components/schemas/Hospital'
+ *                          $ref: '#/components/schemas/Company'
  *          500:
  *              description: Some server error
  */
+
 /**
  * @swagger
- * /hospitals/{id}:
+ * /companies/{id}:
  *  put:
- *      summary: Update the hospital by the id
- *      tags: [Hospitals]
+ *      summary: Update the company by the id
+ *      tags: [Companies]
  *      parameters:
  *        - in: path
  *          name: id
  *          schema:
  *              type: string
  *          required: true
- *          description: The hospital id
+ *          description: The company id
  *      requestBody:
  *          required: true
  *          content:
  *              application/json:
  *                  schema:
- *                      $ref: '#/components/schemas/Hospital'
+ *                      $ref: '#/components/schemas/Company'
  *      responses:
  *          200:
- *              description: The hospital was updated
+ *              description: The company was updated
  *              content:
  *                  application/json:
  *                      schema:
- *                          $ref: '#components/schemas/Hospital'
+ *                          $ref: '#components/schemas/Company'
  *          404:
- *              description: The hospital was not found
+ *              description: The company was not found
  *          500:
  *              description: some error happened            
  */
+
 /**
  * @swagger
- * /hospitals/{id}:
+ * /companies/{id}:
  *  delete:
- *      summary: Remove the hospital by id
- *      tags: [Hospitals]
+ *      summary: Remove the company by id
+ *      tags: [Companies]
  *      parameters:
  *        - in: path
  *          name: id
  *          schema:
  *              type: string
  *          required: true
- *          description: The hospital id
+ *          description: The company id
  * 
  *      responses:
  *          200:
- *              description: The hospital was deleted
+ *              description: The company was deleted
  *          404:
- *              description: The hospital was not found
+ *              description: The company was not found
  */
-router.use('/:companyId/appointments/',appointmentRouter)
 
-router.route('/').get(getCompanies).post(protect,authorize('admin'),createCompany);
-router.route('/vacCenters').get(getVacCenters);
-router.route('/:id').get(getCompany).put(protect,authorize('admin'),updateCompany).delete(protect,authorize('admin'),deleteCompany);
+//Include other resource routers
+const appointmentRouter = require('./appointments');
 
-module.exports=router;
+const router = express.Router();
+const {protect, authorize} = require('../middleware/auth');
+
+//Re-route into other resource routers
+router.use('/:companyId/appointments/', appointmentRouter)
+
+router.route('/').get(getCompanies).post(protect, authorize('admin'), createCompany);
+router.route('/:id').get(getCompany).put(protect, authorize('admin'), updateCompany).delete(protect, authorize('admin'), deleteCompany);
+
+module.exports = router;
