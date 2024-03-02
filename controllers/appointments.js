@@ -95,8 +95,13 @@ exports.addAppointment= async (req, res, next) => {
 
         console.log(req.body);
 
+        // Add user ID to req.body and ensure that the user can only make appointments for themselves.
+        //admin can make appointments on behalf of any user.
+        if(req.user.role === 'user'){
+            req.body.user = req.user.id;
+        }
         //add user Id to req.body
-        req.body.user = req.user.id;
+        //req.body.user = req.user.id;
         
         //Check for existed appointment
         const existedAppointments = await Appointment.find({user: req.user.id});
