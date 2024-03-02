@@ -1,6 +1,6 @@
  const mongoose = require('mongoose');
 
- const AppointmentSchema= new mongoose.Schema({
+ const AppointmentSchema = new mongoose.Schema({
     apptDate: {
         type: Date,
         required: true
@@ -15,10 +15,10 @@
         ref: 'Company',
         required: true
     },
-    createdAt:{
+    createdAt: {
         type: Date,
         default: Date.now
     }
  });
  
- module.exports=mongoose.model('Appointment',AppointmentSchema)
+ module.exports = mongoose.model('Appointment', AppointmentSchema)

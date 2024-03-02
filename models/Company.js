@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const CompaniesSchema = new mongoose.Schema({
+const CompanySchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, 'Please add a name'],
@@ -20,27 +20,28 @@ const CompaniesSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please provide a description for the website']
     },
-    tel:{
+    tel: {
         type: String,
         required: [true, 'Please add a telephone number']
     },
-},{
+}, {
     toJSON: {virtuals: true},
     toObject: {virtuals: true}
 });
 
-CompaniesSchema.virtual('appointments',{
+//Reverse populate with virtuals
+CompanySchema.virtual('appointments', {
     ref: 'Appointment',
     localField: '_id',
     foreignField: 'company',
     justOne: false
 });
 
-//Cascade
-CompaniesSchema.pre('deleteOne',{document: true, query: false}, async function(next){
+//Cascade delete appointments when a company is deleted
+CompanySchema.pre('deleteOne', {document: true, query: false}, async function(next) {
     console.log(`Appointments being removed from companies ${this._id}`);
-    await this.model('Appointment').deleteMany({company:this._id});
+    await this.model('Appointment').deleteMany({company: this._id});
     next();
 })
 
-module.exports = mongoose.model('Company',CompaniesSchema);
+module.exports = mongoose.model('Company', CompanySchema);
