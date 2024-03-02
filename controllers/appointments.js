@@ -130,7 +130,7 @@ exports.addAppointment= async (req, res, next) => {
 //access Private
 exports.updateAppointment = async (req, res, next) => {
     try {
-        const appointment = await Appointment.findById(req.params.id);
+        let appointment = await Appointment.findById(req.params.id);
 
         if (!appointment) {
             return res.status(404).json({
