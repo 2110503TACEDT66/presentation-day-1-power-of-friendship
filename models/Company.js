@@ -28,8 +28,8 @@ const CompanySchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please add a telephone number'],
         maxlength: [12, 'Telephone number must not exceed 12 characters'],
-        match: [/^\d+$/, 'Telephone number must contain only digits']
-    }
+        match: [/^[\d-]+$/, 'Telephone number must contain only digits and hyphens']
+    },  
     
 }, {
     toJSON: {virtuals: true},
@@ -48,6 +48,7 @@ CompanySchema.virtual('appointments', {
 CompanySchema.pre('deleteOne', {document: true, query: false}, async function(next) {
     console.log(`Appointments being removed from companies ${this._id}`);
     await this.model('Appointment').deleteMany({company: this._id});
+    await this.model('Section').deleteMany({company: this._id});
     next();
 })
 

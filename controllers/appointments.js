@@ -1,5 +1,6 @@
 const Appointment = require('../models/Appointment');
 const Company = require('../models/Company');
+const Section = require('../models/Section');
 
 //@desc   Get all appointments
 //@route  GET /api/v1/appointments
@@ -113,7 +114,7 @@ exports.addAppointment= async (req, res, next) => {
         }
 
         //If he chooses a date other than the specified date
-        if (req.body.appDate < '2022-05-10T00:00:00.000Z' || '2022-05-13T23:59:59.999Z' < req.body.appDate) {
+        if (req.body.appDate < '2022-05-10T00:00:00.000Z' || '2022-05-13T23:59:59.999Z' < req.body.appDate || req.body.appDate.substring(11, 13) == '12' || req.body.appDate.toString().substring(11, 13) >= '16' || req.body.appDate.toString().substring(11, 13) < '09') {
             return res.status(400).json({
                 success: false,
                 message: `The user with ID ${req.user.id} has not chooses the specifies date`
@@ -121,21 +122,30 @@ exports.addAppointment= async (req, res, next) => {
         }
 
         //Check AppointmentTime is still available
-        const checkAppointmentTime = await Appointment.find({company: req.params.companyId, appDate: req.body.appDate});
+        const setSection = await Section.find({company: req.params.companyId}).sort({date: -1});
 
-        if(checkAppointmentTime.length > 0){
-                return res.status(400).json({
-                    success: false,
-                    message: `The appointment time for ${req.body.appDate} at this company is already booked. Please choose a different time.`
-                });
-        }
+        for (const element of setSection) {
+            if (req.body.appDate >= element.date.toISOString()) {
+                if (element.status == 'available') {
+                    await Section.findByIdAndUpdate(element._id, {status: 'not available', user: req.body.user}, {
+                        new: true, 
+                        runValidators: true
+                    });
 
-        const appointment = await Appointment.create(req.body);
+                    const appointment = await Appointment.create(req.body);
 
-        res.status(200).json({
-            success: true, 
-            data: appointment
-        });
+                    return res.status(200).json({
+                        success: true, 
+                        data: appointment
+                    });
+                } else {
+                    return res.status(400).json({
+                        success: false,
+                        message: `The appointment time for ${req.body.appDate} at this company is already booked. Please choose a different time.`
+                    });
+                }
+            };
+        };
     } catch(err) {
         console.log(err.stack);
 
@@ -151,7 +161,7 @@ exports.addAppointment= async (req, res, next) => {
 //access Private
 exports.updateAppointment = async (req, res, next) => {
     try {
-        const appointment = await Appointment.findById(req.params.id);
+        let appointment = await Appointment.findById(req.params.id);
 
         if (!appointment) {
             return res.status(404).json({
@@ -206,13 +216,27 @@ exports.deleteAppointment = async (req, res, next) => {
                 message: `User ${req.user.id} is not authorized to delete this appointment`
             });
         }
+    
+        //Check AppointmentTime is still available
+        const setSection = await Section.find({company: appointment.company, status: 'not available'}).sort({date: -1});
+        
+        for (const element of setSection) {
 
-        await appointment.deleteOne();
+            if (appointment.appDate.toISOString() >= element.date.toISOString()) {
+                if (element.status == 'not available') {
+                    await Section.findByIdAndUpdate(element._id, {status: 'available', user: null}, {
+                        new: true, 
+                        runValidators: true
+                    });
+                    await appointment.deleteOne();
 
-        res.status(200).json({
-            success: true,
-            data: {}
-        });
+                    return res.status(200).json({
+                        success: true,
+                        data: {}
+                    });
+                }
+            };
+        };
     } catch (err) {
         console.log(err.stack);
 

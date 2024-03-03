@@ -11,8 +11,8 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please add a telephone number'],
         maxlength: [12, 'Telephone number must not exceed 12 characters'],
-        match: [/^\d+$/, 'Telephone number must contain only digits']
-    },
+        match: [/^[\d-]+$/, 'Telephone number must contain only digits and hyphens']
+    },  
     email: {
         type: String,
         required: [true, 'Please add an email'],

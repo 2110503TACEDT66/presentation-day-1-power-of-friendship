@@ -170,6 +170,7 @@ const {getCompanies, getCompany, createCompany, updateCompany, deleteCompany,cal
 
 //Include other resource routers
 const appointmentRouter = require('./appointments');
+const sectionRouter = require('./sections');
 
 const router = express.Router();
 const {protect, authorize} = require('../middleware/auth');
@@ -177,6 +178,8 @@ const {protect, authorize} = require('../middleware/auth');
 //Re-route into other resource routers
 router.use('/:companyId/appointments/', appointmentRouter);
 router.use('/calculate-distance', calculateDistanceAndDuration);
+
+router.use('/:companyId/sections/', sectionRouter);
 
 router.route('/').get(getCompanies).post(protect, authorize('admin'), createCompany);
 router.route('/:id').get(getCompany).put(protect, authorize('admin'), updateCompany).delete(protect, authorize('admin'), deleteCompany);
