@@ -150,3 +150,85 @@ exports.deleteCompany = async (req, res, next) => {
         res.status(400).json({success: false});
     }
 }
+
+const axios = require('axios');
+
+
+//return current address from ip address
+async function getYourCurrentAddressFromIP() {
+    try {
+        //Use ipapi's api for find latitude and longtitude from IP address
+        const response = await axios.get('https://ipapi.co/json');
+        
+        if ((response.data.city) && (response.data.region) && (response.data.country_name)) {
+            const userAddress =  (response.data.city + ", " + response.data.region);
+            return userAddress;
+        } else {
+            throw new Error(`region or region_code or country_code not found in IP geolocation data`);
+        }
+    } catch (error) {
+        throw new Error('Error retrieving address from IP geolocation');
+    }
+}
+
+async function getDistanceAndDuration(companyAddress, userAddress) {
+
+    //Use Distance Matrix API for calculate distance and duration between two points
+    const response = await axios.get('https://maps.googleapis.com/maps/api/distancematrix/json', {
+        params: {
+            destinations: companyAddress,
+            origins: userAddress,
+            units: 'imperial',
+            key: 'AIzaSyD_7CKN7QIjeCTb6LzTnWh7eF4yrku3CPQ'
+        }
+    });
+
+    if(response.data.status === 'OK'){
+        return  {
+                    distance: response.data.rows[0].elements[0].distance.text,
+                    duration: response.data.rows[0].elements[0].duration.text,
+                }
+    } else{
+        throw new Error(`Error data not found`)
+    }
+
+
+}
+
+// Controller function to calculate distance and duration between your location and a company's address
+exports.calculateDistanceAndDuration = async (req, res) => {
+    try {
+        //company's name from postman
+        const companyName =  req.body.company;
+
+        //find the company by companyName
+        const company = await Company.findOne({name: companyName});
+
+        //check company is exist
+        if(!company){
+            return res.status(400).json({succes: false,message: `this company doesn't exist`});
+        }
+
+        //user's address from function
+        const userAddress = await getYourCurrentAddressFromIP();
+
+        //Company's address from query
+        const companyAddress = company.address;
+
+        //calculate the distance between company and you
+        const distanceAndDuration = await getDistanceAndDuration(companyAddress, userAddress);
+
+        // Send the distance in the response
+        res.status(200).json({
+            success: true,
+            distance : distanceAndDuration.distance,
+            duration : distanceAndDuration.duration
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: 'Error calculating distance'
+        });
+    }
+};
