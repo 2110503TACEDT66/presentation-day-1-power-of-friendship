@@ -14,7 +14,11 @@ const CompanySchema = new mongoose.Schema({
     },
     website: {
         type: String,
-        required: [true, 'Please add the website URL']
+        required: [true, 'Please add the website URL'],
+        match: [
+            /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.){1,}[a-zA-Z]{2,}(\/\S*)?$/,
+            'Please add a valid website URL'
+        ]
     },
     description: {
         type: String,
@@ -22,8 +26,11 @@ const CompanySchema = new mongoose.Schema({
     },
     tel: {
         type: String,
-        required: [true, 'Please add a telephone number']
-    },
+        required: [true, 'Please add a telephone number'],
+        maxlength: [12, 'Telephone number must not exceed 12 characters'],
+        match: [/^\d+$/, 'Telephone number must contain only digits']
+    }
+    
 }, {
     toJSON: {virtuals: true},
     toObject: {virtuals: true}
