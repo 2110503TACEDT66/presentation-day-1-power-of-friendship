@@ -36,7 +36,8 @@ const UserSchema = new mongoose.Schema({
     createAt: {
         type: Date,
         default: Date.now
-    }
+    },
+    portfolio: String
 });
 
 //Encrypt password using bcrypt

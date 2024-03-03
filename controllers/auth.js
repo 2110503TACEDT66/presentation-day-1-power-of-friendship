@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const fs = require('fs');
 
 //@desc   Register user
 //@route  POST /api/v1/auth/register
@@ -110,4 +111,44 @@ exports.logout = async (req, res, next) => {
         success: true,
         data: {}
     });
+}
+
+//@desc   Upload portfolio
+//@route  PUT /api/v1/auth/portfolio
+//@access Private
+exports.portfolio = async (req, res, next) => {
+    try {
+        var data = req.user;
+
+        if (req.file) {
+            await fs.unlink('./uploads/' + req.user.portfolio, (err) => {
+                if (err) {
+                    console.log(err.stack);
+                } else {
+                    console.log('Remove success');
+                }
+            });
+            data.portfolio = req.file.filename
+        }
+        
+        const user = await User.findByIdAndUpdate(req.user.id, data, {
+            new: true,
+            runValidators: true
+        });
+
+        if (!user) {
+            return res.status(400).json({success: false});
+        }
+
+        res.status(200).json({
+            sucess: true, 
+            data: user
+        });
+    } catch (err) {
+        console.log(err.stack);
+        res.status(500).json({
+            success: false, 
+            message: 'Cannot upload portfolio'
+        });
+    }
 }
