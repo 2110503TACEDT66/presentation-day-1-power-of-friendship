@@ -82,6 +82,7 @@ exports.getAppointment = async (req, res, next) => {
 //access Private
 exports.addAppointment= async (req, res, next) => {
     try {
+        
         req.body.company = req.params.companyId;
 
         const company = await Company.findById(req.params.companyId);
@@ -95,24 +96,22 @@ exports.addAppointment= async (req, res, next) => {
 
         console.log(req.body);
 
-        // Add user ID to req.body and ensure that the user can only make appointments for themselves.
-        //admin can make appointments on behalf of any user.
+    // Add user ID to req.body and ensure that the user can only make appointments for themselves.
         if(req.user.role === 'user'){
             req.body.user = req.user.id;
         }
-        //add user Id to req.body
-        //req.body.user = req.user.id;
         
         //Check for existed appointment
         const existedAppointments = await Appointment.find({user: req.user.id});
 
         //If the user is not a admin, they can only create 3 appointment.
-        if (existedAppointments.length >= 3 && req.uesr.role !== 'admin') {
+        if (existedAppointments.length >= 3 && req.user.role !== 'admin') {
             return res.status(400).json({
                 success: false,
                 message: `The user with ID ${req.user.id} has already made 3 appointments`
             });
         }
+
         //If he chooses a date other than the specified date
         if (req.body.appDate < '2022-05-10T00:00:00.000Z' || '2022-05-13T23:59:59.999Z' < req.body.appDate) {
             return res.status(400).json({
@@ -120,15 +119,17 @@ exports.addAppointment= async (req, res, next) => {
                 message: `The user with ID ${req.user.id} has not chooses the specifies date`
             });
         }
+
         //Check AppointmentTime is still available
         const checkAppointmentTime = await Appointment.find({company: req.params.companyId, appDate: req.body.appDate});
 
-        if(checkAppointmentTime){
+        if(checkAppointmentTime.length > 0){
                 return res.status(400).json({
                     success: false,
                     message: `The appointment time for ${req.body.appDate} at this company is already booked. Please choose a different time.`
                 });
         }
+
         const appointment = await Appointment.create(req.body);
 
         res.status(200).json({
@@ -150,7 +151,7 @@ exports.addAppointment= async (req, res, next) => {
 //access Private
 exports.updateAppointment = async (req, res, next) => {
     try {
-        let appointment = await Appointment.findById(req.params.id);
+        const appointment = await Appointment.findById(req.params.id);
 
         if (!appointment) {
             return res.status(404).json({
