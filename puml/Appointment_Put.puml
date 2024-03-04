@@ -1,0 +1,25 @@
+@startuml Manage Appointment (PUT)
+
+header Online Job Fair Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Appointment (PUT)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:appointments" as routerAppointments
+participant "<<middleware>>\n:auth" as middleAuth
+participant "<<controllers>>\n:appointments" as controllersAppointments
+participant "<<model>>\n:Appointment" as modelAppointment
+database "<<MongoDB>>\n:appointments" as AppointmentsDatabase
+
+client -> server ++: req.put('/appointments/:id')
+server -> routerAppointments ++: app.use('/appointments', appointments)
+routerAppointments -> middleAuth ++: protect(), authorize('admin', 'user')
+middleAuth -> controllersAppointments ++: updateAppointment()
+controllersAppointments -> modelAppointment ++: findByIdAndUpdate(req.params.id, req.body)
+modelAppointment -> AppointmentsDatabase ++: AppointmentSchema
+AppointmentsDatabase --> modelAppointment --: appointment
+controllersAppointments <-- modelAppointment --: appointment
+controllersAppointments -> client --: response
+
+@enduml

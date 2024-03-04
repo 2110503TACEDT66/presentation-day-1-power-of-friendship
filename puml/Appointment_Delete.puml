@@ -1,0 +1,25 @@
+@startuml Manage Appointment (DELETE)
+
+header Online Job Fair Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Appointment (DELETE)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:appointments" as routerAppointments
+participant "<<middleware>>\n:auth" as middleAuth
+participant "<<controllers>>\n:appointments" as controllersAppointments
+participant "<<model>>\n:Appointment" as modelAppointment
+database "<<MongoDB>>\n:appointments" as AppointmentsDatabase
+
+client -> server ++: req.delete('/appointments/:id')
+server -> routerAppointments ++: app.use('/appointments', appointments)
+routerAppointments -> middleAuth ++: protect(), authorize('admin', 'user')
+middleAuth -> controllersAppointments ++: deleteAppointment()
+controllersAppointments -> modelAppointment ++: findById(req.params.id), deleteOne()
+modelAppointment -> AppointmentsDatabase ++: AppointmentSchema
+AppointmentsDatabase --> modelAppointment --: appointment
+controllersAppointments <-- modelAppointment --: appointment
+controllersAppointments -> client --: response
+
+@enduml

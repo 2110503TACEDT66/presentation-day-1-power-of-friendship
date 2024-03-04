@@ -1,0 +1,25 @@
+@startuml Manage Section (POST)
+
+header Online Job Fair Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Section (POST)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:sections" as routerSections
+participant "<<middleware>>\n:auth" as middleAuth
+participant "<<controllers>>\n:sections" as controllersSections
+participant "<<model>>\n:Section" as modelSection
+database "<<MongoDB>>\n:sections" as SectionsDatabase
+
+client -> server ++: req.post('/sections')
+server -> routerSections ++: app.use('/sections', sections)
+routerSections -> middleAuth ++: protect(), authorize('admin')
+middleAuth -> controllersSections ++: createSections()
+controllersSections -> modelSection ++: create(req.body)
+modelSection -> SectionsDatabase ++: SectionSchema
+SectionsDatabase --> modelSection --: section
+controllersSections <-- modelSection --: section
+controllersSections -> client --: response
+
+@enduml

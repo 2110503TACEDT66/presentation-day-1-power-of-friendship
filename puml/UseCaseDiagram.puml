@@ -1,0 +1,29 @@
+@startuml Online Job Fair System Use Case Diagram
+left to right direction
+
+rectangle "Online Job Fair System" as BookingSystem {
+    usecase "Register" as Register
+    usecase "Manage\nCompanies" as ManageCompanies
+    usecase "Manage All\nAppointments" as ManageAllAppointments
+    usecase "Manage Own\nAppointments" as ManageOwnAppointments
+    usecase "Manage\nSections" as ManageSections
+    usecase "View\nCompanies" as ViewCompanies
+    usecase "View\nSections" as ViewSections
+}
+actor "New User" as NUser
+NUser -- Register
+
+actor "Registered User" as RUser
+RUser -- ViewCompanies
+RUser -- ViewSections
+RUser -- ManageOwnAppointments
+
+
+actor "Admin" as Ad
+ManageCompanies -- Ad
+ManageSections -- Ad
+ManageAllAppointments -- Ad
+
+NUser -> RUser
+
+@enduml
