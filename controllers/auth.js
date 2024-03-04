@@ -121,14 +121,18 @@ exports.portfolio = async (req, res, next) => {
         var data = req.user;
 
         if (req.file) {
-            await fs.unlink('./uploads/' + req.user.portfolio, (err) => {
-                if (err) {
-                    console.log(err.stack);
-                } else {
-                    console.log('Remove success');
-                }
-            });
-            data.portfolio = req.file.filename
+            if (req.user.portfolio) {
+                await fs.unlink('./uploads/' + req.user.portfolio, (err) => {
+                    if (err) {
+                        console.log(err.stack);
+                    } else {
+                        console.log('Remove success');
+                    }
+                });
+            }
+            data.portfolio = req.file.filename;
+        } else {
+            data.portfolio = null;
         }
         
         const user = await User.findByIdAndUpdate(req.user.id, data, {
