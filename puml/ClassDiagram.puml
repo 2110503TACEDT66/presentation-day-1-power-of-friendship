@@ -1,33 +1,95 @@
 @startuml
 left to right direction
-package "VacQ"{
-    class "<<Application>>\nVacQService" as VacQService{}
+package "Online_Job_Fair"{
+    class "<<Application>>\nOnline_Job_FairService" as Online_Job_FairService{}
 
-    class "<<Resource>>\nHospitals" as ResourceHospitals{
-        <<GET>> +getHospitals():Hospital
-        <<POST>> +createHospital():Hospital
+    class "<<Resource>>\nCompanies" as ResourceCompanies{
+        <<GET>> +getCompanies():Company
+        <<POST>> +createCompany():Company
     }
 
-    class "<<Resource>>\nHospital" as ResourceHospital {
-        <<GET>> +getHospital(): Hospital
-        <<PUT>> +updateHospital(): Hospital
-        <<DELETE>> +deleteHospital(): void
+    class "<<Resource>>\nCompany" as ResourceCompany {
+        <<GET>> +getCompany(): Company
+        <<PUT>> +updateCompany(): Company
+        <<DELETE>> +deleteCompany(): void
     }
 
-    class "<<Representation>>\nHospital" as RepresentationHospital {
+    class "<<Representation>>\nCompany" as RepresentationCompany {
         -name
         -address
-        -district
-        -province
-        -postalcode
-        -telephone
-        -region
+        -website
+        -description
+        -tel
+    }
+
+    class "<<Resource>>\nAppointments" as ResourceAppointments{
+        <<GET>> +getAppointments():Appointment
+        <<POST>> +createAppointment():Appointment
+    }
+
+    class "<<Resource>>\nAppointment" as ResourceAppointment {
+        <<GET>> +getAppointment(): Appointment
+        <<PUT>> +updateAppointment(): Appointment
+        <<DELETE>> +deleteAppointment(): void
+    }
+
+    class "<<Representation>>\nAppointment" as RepresentationAppointment {
+        -appDate
+        -user
+        -company
+        -createdAt
+    }
+
+    class "<<Resource>>\nSections" as ResourceSections{
+        <<GET>> +getSections():Section
+        <<POST>> +createSection():Section
+    }
+
+    class "<<Resource>>\nSection" as ResourceSection {
+        <<GET>> +getSection(): Section
+        <<PUT>> +updateSection(): Section
+        <<DELETE>> +deleteSection(): void
+    }
+
+    class "<<Representation>>\nSection" as RepresentationSection {
+        -company
+        -user
+        -date
+        -status
+        -description
+    }
+
+    class "<<Resource>>\nAuth" as ResourceUser{
+        <<POST>> +register():User
+        <<POST>> +login():User
+        <<GET>> +logout():User
+        <<GET>> +me():User
+    }
+
+     class "<<Representation>>\nUser" as RepresentationUser {
+        -name
+        -tel
+        -email
+        -role
+        -password
+        -createdAt
     }
 
 }
 
-VacQService ..> ResourceHospitals:"/hospitals\n<<Path>>"
-ResourceHospitals ..> ResourceHospital: "/{hospitalId}\n<<Path>>"
-ResourceHospital ..> RepresentationHospital: "<<use>>"
+Online_Job_FairService ..> ResourceCompanies:"/companies\n<<Path>>"
+ResourceCompanies ..> ResourceCompany: "/{companyId}\n<<Path>>"
+ResourceCompany ..> RepresentationCompany: "<<use>>"
+
+Online_Job_FairService ..> ResourceAppointments:"/appointments\n<<Path>>"
+ResourceAppointments ..> ResourceAppointment:"/{appointmentId}\n<<Path>>"
+ResourceAppointment ..> RepresentationAppointment: "<<use>>"
+
+Online_Job_FairService ..> ResourceSections:"/sections\n<<Path>>"
+ResourceSections ..> ResourceSection:"/{sectionId}\n<<Path>>"
+ResourceSection ..> RepresentationSection: "<<use>>"
+
+Online_Job_FairService ..> ResourceUser: "/auth/{register, login, logout, me}\n<<Path>>"
+ResourceUser ..> RepresentationUser: "<<user>>"
 
 @enduml

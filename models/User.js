@@ -40,6 +40,16 @@ const UserSchema = new mongoose.Schema({
         default: Date.now
     },
     portfolio: String
+},{
+    toJSON: {virtuals: true},
+    toObject: {virtuals: true}
+});
+
+UserSchema.virtual('appointments', {
+    ref: 'Appointment',
+    localField: '_id',
+    foreignField: 'user',
+    justOne: false
 });
 
 //Encrypt password using bcrypt

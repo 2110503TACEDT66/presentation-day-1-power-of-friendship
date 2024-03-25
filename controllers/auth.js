@@ -38,9 +38,9 @@ exports.login = async (req, res, next) => {
                 msg: 'Please provide an email and password'
             });
         }
-
+        
         //Check for user
-        const user = await User.findOne({email}).select('+password');
+        const user = await User.findOne({ email }).populate('appointments').select('+password');
 
         if (!user) {
             return res.status(400).json({
@@ -82,6 +82,10 @@ const sendTokenResponse = (user, statusCode, res) => {
     
     res.status(statusCode).cookie('token', token, options).json({
         success: true,
+        name: user.name,
+        email: user.email,
+        appointments: user.appointments,
+        role: user.role,
         token
     });
 };

@@ -29,7 +29,11 @@ const CompanySchema = new mongoose.Schema({
         required: [true, 'Please add a telephone number'],
         maxlength: [12, 'Telephone number must not exceed 12 characters'],
         match: [/^[\d-]+$/, 'Telephone number must contain only digits and hyphens']
-    },  
+    },
+    picture: {
+        type:String,
+        required: [true, 'Please provide a link of picture']
+    }
     
 }, {
     toJSON: {virtuals: true},
