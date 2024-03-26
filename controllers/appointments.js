@@ -114,7 +114,7 @@ exports.addAppointment= async (req, res, next) => {
         }
 
         //If he chooses a date other than the specified date
-        if (req.body.appDate < '2022-05-10T00:00:00.000Z' || '2022-05-13T23:59:59.999Z' < req.body.appDate || req.body.appDate.substring(11, 13) == '12' || req.body.appDate.toString().substring(11, 13) >= '16' || req.body.appDate.toString().substring(11, 13) < '09') {
+        if (req.body.appDate < '2022-05-10T00:00:00.000Z' || '2022-05-13T23:59:59.999Z' < req.body.appDate || req.body.appDate.substring(11, 13) == '05' || req.body.appDate.toString().substring(11, 13) >= '09' || req.body.appDate.toString().substring(11, 13) < '02') {
             return res.status(400).json({
                 success: false,
                 message: `The user with ID ${req.user.id} has not chooses the specifies date`

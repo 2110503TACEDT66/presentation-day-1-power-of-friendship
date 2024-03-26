@@ -15,10 +15,6 @@ const CompanySchema = new mongoose.Schema({
     website: {
         type: String,
         required: [true, 'Please add the website URL'],
-        match: [
-            /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.){1,}[a-zA-Z]{2,}(\/\S*)?$/,
-            'Please add a valid website URL'
-        ]
     },
     description: {
         type: String,
