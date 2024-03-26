@@ -159,7 +159,7 @@ const axios = require('axios');
 async function getYourCurrentAddressFromIP() {
     try {
         //Use ipapi's api for find latitude and longtitude from IP address
-        const response = await axios.get('https://ipapi.co/json');
+        const response = await axios.get('https://ipapi.co/124.122.90.75/json');
         
         if ((response.data.city) && (response.data.region) && (response.data.country_name)) {
             const userAddress =  (response.data.city + ", " + response.data.region);
@@ -212,12 +212,15 @@ exports.calculateDistanceAndDuration = async (req, res) => {
 
         //user's address from function
         const userAddress = await getYourCurrentAddressFromIP();
+        console.log(userAddress);
 
         //Company's address from query
         const companyAddress = company.address;
 
+
         //calculate the distance between company and you
         const distanceAndDuration = await getDistanceAndDuration(companyAddress, userAddress);
+        console.log(distanceAndDuration);
 
         // Send the distance in the response
         res.status(200).json({
