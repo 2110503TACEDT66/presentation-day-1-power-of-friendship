@@ -99,6 +99,7 @@ exports.getCompany = async (req, res, next) => {
 //@route  POST /api/v1/companies
 //@access Private
 exports.createCompany =  async (req, res, next) => {
+    req.body.picture = req.body.picture.replace(/&amp;/g, '&');
     const company = await Company.create(req.body);
     res.status(201).json({
         succes: true,
